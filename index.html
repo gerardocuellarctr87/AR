@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -140,7 +141,10 @@
         shadow-softness="0.8"
         exposure="1.1"
         environment-image="neutral"
-        camera-orbit="35deg 75deg auto">
+        camera-orbit="20deg 75deg 2.2m"
+        field-of-view="28deg"
+        min-camera-orbit="auto auto 0.5m"
+        max-camera-orbit="auto auto 8m">
 
         <!-- Botón AR personalizado -->
         <button slot="ar-button" class="ar-button">
@@ -160,6 +164,19 @@
   <script>
     const viewer = document.getElementById('viewer');
     const hint = document.getElementById('hint');
+
+    // Encuadre automático: al cargar, acerca la cámara para que el modelo
+    // llene la pantalla sin importar su escala interna.
+    viewer.addEventListener('load', () => {
+      const fov = 28; // grados
+      const dims = viewer.getDimensions();
+      const size = Math.max(dims.x, dims.y, dims.z);
+      // distancia para encuadrar el objeto con un margen del 15%
+      const dist = (size / 2) / Math.tan((fov / 2) * Math.PI / 180) * 1.15;
+      viewer.cameraOrbit = `20deg 75deg ${dist}m`;
+      viewer.fieldOfView = `${fov}deg`;
+      viewer.jumpCameraToGoal();
+    });
 
     // Mostrar pista breve al entrar a AR
     viewer.addEventListener('ar-status', (event) => {

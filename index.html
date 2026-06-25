@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Micropipeta CTR — Realidad Aumentada</title>
+
+  <!-- Librería model-viewer de Google -->
+  <script type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
+  <style>
+    :root {
+      --ctr-cyan: #00ACD8;
+      --ctr-coal: #2A2623;
+      --ctr-red:  #F32735;
+      --ctr-gray: #878787;
+      --ctr-paper:#FAFAF8;
+      --ctr-mist: #F2F3F4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Montserrat', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--ctr-paper);
+      color: var(--ctr-coal);
+    }
+
+    .wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    header {
+      padding: 18px 20px 12px;
+      text-align: center;
+      border-bottom: 1px solid var(--ctr-mist);
+    }
+
+    header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    header p {
+      margin-top: 4px;
+      font-size: 0.82rem;
+      color: var(--ctr-gray);
+      font-weight: 400;
+    }
+
+    /* Visor 3D / AR */
+    model-viewer {
+      flex: 1;
+      width: 100%;
+      background: linear-gradient(180deg, var(--ctr-mist) 0%, var(--ctr-paper) 100%);
+      --poster-color: transparent;
+    }
+
+    /* Botón de Realidad Aumentada */
+    .ar-button {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ctr-cyan);
+      color: #fff;
+      border: none;
+      border-radius: 28px;
+      padding: 13px 26px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 14px rgba(0, 172, 216, 0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ar-button:active { transform: translateX(-50%) scale(0.97); }
+
+    .ar-button svg { width: 18px; height: 18px; fill: #fff; }
+
+    /* Aviso de instrucciones */
+    .hint {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(42, 38, 35, 0.82);
+      color: #fff;
+      font-size: 0.78rem;
+      padding: 8px 16px;
+      border-radius: 18px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .hint.show { opacity: 1; }
+
+    footer {
+      padding: 10px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--ctr-gray);
+      border-top: 1px solid var(--ctr-mist);
+    }
+
+    .viewer-area { position: relative; flex: 1; display: flex; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Micropipeta CTR</h1>
+      <p>Gira el modelo con el dedo · Toca “Ver en tu espacio” para AR</p>
+    </header>
+
+    <div class="viewer-area">
+      <model-viewer
+        id="viewer"
+        src="pipetaCTR.glb"
+        ios-src="pipetaCTR.usdz"
+        alt="Modelo 3D de una micropipeta CTR"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        ar-scale="auto"
+        camera-controls
+        touch-action="pan-y"
+        auto-rotate
+        auto-rotate-delay="3000"
+        rotation-per-second="18deg"
+        shadow-intensity="1"
+        shadow-softness="0.8"
+        exposure="1.1"
+        environment-image="neutral"
+        camera-orbit="35deg 75deg auto">
+
+        <!-- Botón AR personalizado -->
+        <button slot="ar-button" class="ar-button">
+          <svg viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7L12 2zm0 2.18L19.5 8 12 11.82 4.5 8 12 4.18zM4 9.27l7 3.5v7.23l-7-3.5V9.27zm16 0v7.23l-7 3.5v-7.23l7-3.5z"/></svg>
+          Ver en tu espacio
+        </button>
+
+        <div class="hint" id="hint">Mueve el teléfono para detectar una superficie</div>
+      </model-viewer>
+    </div>
+
+    <footer>
+      CTR Scientific · La certeza detrás de cada análisis
+    </footer>
+  </div>
+
+  <script>
+    const viewer = document.getElementById('viewer');
+    const hint = document.getElementById('hint');
+
+    // Mostrar pista breve al entrar a AR
+    viewer.addEventListener('ar-status', (event) => {
+      if (event.detail.status === 'session-started') {
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 4000);
+      }
+    });
+  </script>
+</body>
+</html>
